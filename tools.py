@@ -12,7 +12,7 @@ def get_mesh_dims(file_list):
     xmax = np.max(top_data.variables['coordx'])
     xmin = np.min(bot_data.variables['coordx'])
 
-    ymax = np.max(top_data.variables['coordy'])
+    ymax = np.max(bot_data.variables['coordy'])
     ymin = np.min(top_data.variables['coordy'])
 
     top_data.close()
