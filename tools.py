@@ -44,11 +44,34 @@ def extract_line_data(filename, file_list, x_pos, ymin, ymax, threshold):
     pp0 = df['pp0'].values
     x = df['arc_length'].values
 
-    relmax_ind = argrelextrema(pp0, np.greater)
+    # get locations/values of local maximums
+    relmax_ind = argrelextrema(pp0, np.greater)[0]
     x_relmax = x[relmax_ind]
     pp0_relmax = pp0[relmax_ind]
 
-    relmin_ind = argrelextrema(pp0, np.less)
+    # get locations/values of local minimums.
+    # this is more complicated because there can be
+    # instances where argrelextrema(pp0, np.less) does 
+    # not identify a relative min between two relative
+    # maximums because the data is discrete.
+    # we can switch to np.less_equal to avoid this,
+    # but this can result in multiple relative minimums
+    # being identified -- this is fine in theory, but
+    # but makes identifying dendrite pairs harder, so we
+    # additionally remove any instances of double minimums,
+    # taking the least value
+    tmpmin_ind = argrelextrema(pp0, np.less_equal)[0][1:-1]  # trim end pts
+    relmin_ind = np.zeros(relmax_ind.size - 1, dtype=int)
+    for i in range(relmax_ind.size - 1):
+        min_inds = tmpmin_ind[tmpmin_ind < relmax_ind[i + 1]]
+        min_inds = min_inds[min_inds > relmax_ind[i]]
+        if min_inds.size == 1:
+            min_ind = min_inds[0]
+        else:
+            min_ind = min_inds[np.argmin(pp0[min_inds])]
+        # END if 
+        relmin_ind[i] = min_ind
+    # END for
     x_relmin = x[relmin_ind]
     pp0_relmin = pp0[relmin_ind]
 
