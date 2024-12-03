@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 import argparse as ap
-import glob
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -39,8 +38,8 @@ def main(file_list, x_pos, threshold, outname):
     fig.tight_layout()
     fig.savefig(outname)
     
-    print(f'distances between dendrites = {data['dists']}')
-    print(f'dendrites are paired = {data['pairs']}')
+    print(f"distances between dendrites = {data['dists']}")
+    print(f"dendrites are paired = {data['pairs']}")
 
 # END main()
 
