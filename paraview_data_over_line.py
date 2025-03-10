@@ -1,4 +1,5 @@
-#!/Applications/ParaView-5.11.2.app/Contents/bin/pvpython
+#!/usr/projects/hpcsoft/spack-paraview/cray-sles15-zen2/paraview/gcc-12.1.0/paraview-5.10.1-sh43pwemz5ljp34wpp7jklzxflbklqez/bin/pvpython
+
 
 from paraview.simple import *
 
