@@ -5,9 +5,14 @@ from paraview.simple import *
 import argparse as ap
 
 
-def main(file, out):
+def main(file, out, time):
     # create a new 'IOSS Reader'
     results = IOSSReader(registrationName='results', FileName=[file])
+
+    # get the time-keeper, move to final time
+    timeKeeper = GetTimeKeeper()
+    finalTime = timeKeeper.TimestepValues[time]
+    UpdatePipeline(time=finalTime, proxy=results)
 
     # get active view
     renderView = GetActiveViewOrCreate('RenderView')
@@ -90,7 +95,13 @@ if __name__ == '__main__':
                         default='out.pdf',
                         help='Name for output visualization file.')
 
+    parser.add_argument('-t', '--time', dest='time',
+                        type=int,
+                        required=False,
+                        default=-1,
+                        help='Time index to visualize.')
+
     args = parser.parse_args()
 
-    main(args.file, args.out)
+    main(args.file, args.out, args.time)
 # END if

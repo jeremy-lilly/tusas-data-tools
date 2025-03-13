@@ -5,7 +5,7 @@ from paraview.simple import *
 import argparse as ap
 
 
-def main(files, out, start, end):
+def main(files, out, start, end, time):
 
     # read in data
     data = IOSSReader(registrationName='results',
@@ -13,7 +13,7 @@ def main(files, out, start, end):
 
     # get the time-keeper, move to final time
     timeKeeper = GetTimeKeeper()
-    finalTime = timeKeeper.TimestepValues[-1]
+    finalTime = timeKeeper.TimestepValues[time]
     UpdatePipeline(time=finalTime, proxy=data)
 
     # only pass the data we need to PlotOverLine
@@ -60,12 +60,19 @@ if __name__  == '__main__':
                         required=True,
                         help='(x, y, z) for the end point of the line.')
 
+    parser.add_argument('-t', '--time', dest='time',
+                        type=int,
+                        required=False,
+                        default=-1,
+                        help='Time index to visualize.')
+
     args = parser.parse_args()
 
     main(args.files,
          args.out,
          args.line_start,
-         args.line_end)
+         args.line_end,
+         args.time)
 
 # END if
 
