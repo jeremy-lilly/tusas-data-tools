@@ -1,4 +1,9 @@
-#!/Applications/ParaView-5.11.2.app/Contents/bin/pvpython
+#!/usr/projects/hpcsoft/spack-paraview/cray-sles15-zen2/paraview/gcc-12.1.0/paraview-5.10.1-sh43pwemz5ljp34wpp7jklzxflbklqez/bin/pvpython
+
+# mac:/Applications/ParaView-5.11.2.app/Contents/bin/pvpython
+# chicoma:/usr/projects/hpcsoft/spack-paraview/cray-sles15-zen2/paraview/gcc-12.1.0/paraview-5.10.1-sh43pwemz5ljp34wpp7jklzxflbklqez/bin/pvpython
+# rocinante:/usr/projects/hpcsoft/tce/23-12/cos2-x86_64/linux-sles15-x86_64_v3/paraview/-/paraview-5.10.1-6soewn6hownmuggfefljehtlymihf3se/bin/pvpython
+
 
 from paraview.simple import *
 
@@ -11,8 +16,7 @@ def main(file, out, time):
 
     # get the time-keeper, move to final time
     timeKeeper = GetTimeKeeper()
-    finalTime = timeKeeper.TimestepValues[time]
-    UpdatePipeline(time=finalTime, proxy=results)
+    realTime = timeKeeper.TimestepValues[time]
 
     # get active view
     renderView = GetActiveViewOrCreate('RenderView')
@@ -30,6 +34,7 @@ def main(file, out, time):
     # get animation scene
     animationScene = GetAnimationScene()
     animationScene.UpdateAnimationUsingDataTimeSteps()
+    animationScene.AnimationTime = realTime
 
     # Properties modified on renderView
     renderView.UseColorPaletteForBackground = 0
@@ -47,9 +52,7 @@ def main(file, out, time):
     resultsDisplay.SetScalarBarVisibility(renderView, True)
 
     # get 2D transfer function for 'pp0'
-    pp0TF2D = GetTransferFunction2D('pp0')
     pp0LUT = GetColorTransferFunction('pp0')
-    pp0LUT.TransferFunction2D = pp0TF2D
     pp0LUT.RGBPoints = [3.3746602361278053, 0.231373, 0.298039, 0.752941, 
                         7.687304622007792, 0.865003, 0.865003, 0.865003, 
                         11.999949007887778, 0.705882, 0.0156863, 0.14902]

@@ -1,4 +1,9 @@
-#!/Applications/ParaView-5.11.2.app/Contents/bin/pvpython
+#!/usr/projects/hpcsoft/spack-paraview/cray-sles15-zen2/paraview/gcc-12.1.0/paraview-5.10.1-sh43pwemz5ljp34wpp7jklzxflbklqez/bin/pvpython
+
+# mac:/Applications/ParaView-5.11.2.app/Contents/bin/pvpython
+# chicoma:/usr/projects/hpcsoft/spack-paraview/cray-sles15-zen2/paraview/gcc-12.1.0/paraview-5.10.1-sh43pwemz5ljp34wpp7jklzxflbklqez/bin/pvpython
+# rocinante:/usr/projects/hpcsoft/tce/23-12/cos2-x86_64/linux-sles15-x86_64_v3/paraview/-/paraview-5.10.1-6soewn6hownmuggfefljehtlymihf3se/bin/pvpython
+
 
 from paraview.simple import *
 
