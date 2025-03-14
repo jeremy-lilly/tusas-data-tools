@@ -12,8 +12,7 @@ def main(file, out, time):
 
     # get the time-keeper, move to final time
     timeKeeper = GetTimeKeeper()
-    finalTime = timeKeeper.TimestepValues[time]
-    UpdatePipeline(time=finalTime, proxy=results)
+    realTime = timeKeeper.TimestepValues[time]
 
     # get active view
     renderView = GetActiveViewOrCreate('RenderView')
@@ -31,6 +30,7 @@ def main(file, out, time):
     # get animation scene
     animationScene = GetAnimationScene()
     animationScene.UpdateAnimationUsingDataTimeSteps()
+    animationScene.AnimationTime = realTime
 
     # Properties modified on renderView
     renderView.UseColorPaletteForBackground = 0
