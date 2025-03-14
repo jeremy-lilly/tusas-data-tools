@@ -8,15 +8,17 @@ import pandas as pd
 from tools import *
 
 
-def main(file_list, x_pos, threshold, outname):
+def main(file_list, x_pos, time, threshold, outname):
 
     # parse input data to pass to tools
     datapath = '/'.join(file_list[0].split('/')[:-1]) + '/'
-    filename = datapath + f'{x_pos:g}.csv'
+    filename = datapath + f'{x_pos:g}_{time}.csv'
     
     xmin, xmax, ymin, ymax = get_mesh_dims(file_list)
     
-    data = extract_line_data(filename, file_list, x_pos, ymin, ymax, threshold)
+    data = extract_line_data(filename, file_list,
+                             x_pos, ymin, ymax,
+                             threshold, time)
 
     # plot extracted data
     x = data['DataFrame']['arc_length'].values
@@ -33,14 +35,27 @@ def main(file_list, x_pos, threshold, outname):
     ax.set_ylabel('pp0')
     ax.set_xlabel('arc length')
     
-    #ax.set_xlim([500, 700])
-    
     fig.tight_layout()
     fig.savefig(outname)
     
-    print(f"distances between dendrites = {data['dists']}")
-    print(f"dendrites are paired = {data['pairs']}")
+    # the total number of dendrites is equal to the number
+    # relative maximums, minus the number of relative maximums
+    # that don't have a relative min between them that is below
+    # the given threshold
+    num_dendrites = data['pp0_relmax'].shape[0]
+    num_dendrites -= np.where(data['pairs'] == 1)[0].shape[0]
+    
+    # write info out to log
+    log_file = filename.split('.')[0] + '.txt'
+    log_msg = (f"distances between rel maximums = {data['dists']}\n" + 
+               f"rel maximums are paired = {data['pairs']}\n" + 
+               f"number of dendrites = {num_dendrites}\n" + 
+               f"cross-section length = {ymax - ymin}\n" + 
+               f"average dendrite spacing = {(ymax - ymin) / num_dendrites}\n")
 
+    with open(log_file, 'w') as log:
+        log.write(log_msg)
+    # END with
 # END main()
 
 
@@ -60,6 +75,11 @@ if __name__ == '__main__':
                         required=True,
                         help='x-position of data to extract/plot.')
 
+    parser.add_argument('-i','--time', dest='time',
+                        type=int,
+                        default=-1,
+                        help='Time index.')
+
     parser.add_argument('-t', '--threshold', dest='threshold',
                         default=6,
                         type=float,
@@ -74,7 +94,9 @@ if __name__ == '__main__':
     
     main(args.files,
          args.x_pos,
+         args.time,
          args.threshold,
          args.outname)
 
 # END if
+

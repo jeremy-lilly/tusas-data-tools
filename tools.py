@@ -22,7 +22,7 @@ def get_mesh_dims(file_list):
 # END get_mesh_dims()
 
 
-def extract_line_data(filename, file_list, x_pos, ymin, ymax, threshold):
+def extract_line_data(filename, file_list, x_pos, ymin, ymax, threshold, time):
     try:
         df = pd.read_csv(filename, sep=',')
     except FileNotFoundError:
@@ -33,7 +33,8 @@ def extract_line_data(filename, file_list, x_pos, ymin, ymax, threshold):
                       f'-f {files} ' +
                       f'-o {filename} ' +
                       f'-s {x_pos} {ymin} 0 ' + 
-                      f'-e {x_pos} {ymax} 0')
+                      f'-e {x_pos} {ymax} 0 ' +
+                      f'-t {time}')
         sp.run(sh_command.split())
 
         print('done.')
@@ -86,7 +87,7 @@ def extract_line_data(filename, file_list, x_pos, ymin, ymax, threshold):
     # is not below the threshold value
     # i.e. index 0 will contain the bool
     # for whether peak 0 and peak 1 are pairs
-    pairs = np.zeros(pp0_relmax.size - 1)
+    pairs = np.zeros(pp0_relmax.size - 1, dtype=int)
 
     for i in range(pp0_relmax.size - 1):
         dists[i] = x_relmax[i + 1] - x_relmax[i]
@@ -105,6 +106,5 @@ def extract_line_data(filename, file_list, x_pos, ymin, ymax, threshold):
     data['pairs'] = pairs
 
     return data
-
 # END extract_line_data()
 
