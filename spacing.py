@@ -8,13 +8,16 @@ import pandas as pd
 from tools import *
 
 
-def main(file_list, x_pos, time, threshold, outname):
+def main(file_list, x_pos, x_division, time, threshold, outname):
+    xmin, xmax, ymin, ymax = get_mesh_dims(file_list)
+
+    if x_division:
+        x_pos = x_division * (xmax - xmin)
+    # END if
 
     # parse input data to pass to tools
     datapath = '/'.join(file_list[0].split('/')[:-1]) + '/'
     filename = datapath + f'{x_pos:g}_{time}.csv'
-    
-    xmin, xmax, ymin, ymax = get_mesh_dims(file_list)
     
     data = extract_line_data(filename, file_list,
                              x_pos, ymin, ymax,
@@ -28,7 +31,7 @@ def main(file_list, x_pos, time, threshold, outname):
     num_dendrites -= np.where(data['pairs'] == 1)[0].shape[0]
     
     # write info out to log
-    log_file = filename.split('.')[0] + '.txt'
+    log_file = '.'.join(filename.split('.')[:-1]) + f'_{threshold}.txt'
     log_msg = (f"distances between rel maximums = {data['dists']}\n" + 
                f"rel maximums are paired = {data['pairs']}\n" + 
                f"number of dendrites = {num_dendrites}\n" + 
@@ -72,10 +75,14 @@ if __name__ == '__main__':
                         help='Path to output data with a wildcard.' +
                              'Ex: /path/to/results.e.8.*')
 
-    parser.add_argument('-x', '--x-position', dest='x_pos',
-                        type=float,
-                        required=True,
-                        help='x-position of data to extract/plot.')
+    pos_group = parser.add_mutually_exclusive_group(required=True)
+    pos_group.add_argument('-x', '--x-position', dest='x_pos',
+                           type=float,
+                           help='x-position of data to extract/plot.')
+    pos_group.add_argument('-d', '--x-division', dest='x_division',
+                           type=float,
+                           help='Float giving the fractional position in the x-direction ' +
+                                'to extract data.')
 
     parser.add_argument('-t','--time', dest='time',
                         type=int,
@@ -95,6 +102,7 @@ if __name__ == '__main__':
     
     main(args.files,
          args.x_pos,
+         args.x_division,
          args.time,
          args.threshold,
          args.outname)
