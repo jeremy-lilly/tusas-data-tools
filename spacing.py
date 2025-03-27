@@ -32,10 +32,8 @@ def main(file_list, x_pos, x_division, time, threshold, outname):
     
     # write info out to log
     log_file = '.'.join(filename.split('.')[:-1]) + f'_{threshold}.txt'
-    log_msg = (f"distances between rel maximums = {data['dists']}\n" + 
-               f"rel maximums are paired = {data['pairs']}\n" + 
-               f"number of dendrites = {num_dendrites}\n" + 
-               f"cross-section length = {ymax - ymin}\n" + 
+    log_msg = (f"number of dendrites = {num_dendrites}\n" +
+               f"cross-section length = {ymax - ymin}\n" +
                f"average dendrite spacing = {(ymax - ymin) / num_dendrites}\n")
 
     with open(log_file, 'w') as log:
