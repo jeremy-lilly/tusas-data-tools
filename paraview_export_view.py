@@ -1,4 +1,4 @@
-#!/usr/projects/hpcsoft/spack-paraview/cray-sles15-zen2/paraview/gcc-12.1.0/paraview-5.10.1-sh43pwemz5ljp34wpp7jklzxflbklqez/bin/pvpython
+#!/opt/paraview/bin/pvpython
 
 # mac:/Applications/ParaView-5.11.2.app/Contents/bin/pvpython
 # chicoma:/usr/projects/hpcsoft/spack-paraview/cray-sles15-zen2/paraview/gcc-12.1.0/paraview-5.10.1-sh43pwemz5ljp34wpp7jklzxflbklqez/bin/pvpython
@@ -10,7 +10,16 @@ from paraview.simple import *
 import argparse as ap
 
 
-def main(file, out, time):
+def main(file, out, time, mesh):
+    if mesh == '4416x2208p8':
+        mesh_factor = 1
+    elif mesh == '8832x2208p8':
+        mesh_facor = 2
+    else:
+        print('Mesh not recognized, defaulting to layout for 4416x2208p8.')
+        mesh_factor = 1
+    # END if
+
     # create a new 'IOSS Reader'
     results = IOSSReader(registrationName='results', FileName=[file])
 
@@ -23,13 +32,17 @@ def main(file, out, time):
 
     # current camera placement for renderView
     renderView.InteractionMode = '2D'
-    renderView.CameraPosition = [1911.2685622012252, 893.5010100912012, 7630.409257346341]
-    renderView.CameraFocalPoint = [1911.2685622012252, 893.5010100912012, 0.0]
-    renderView.CameraParallelScale = 923.1409390528261
-
+    #renderView.CameraPosition = [1911.2685622012252, 893.5010100912012, 7630.409257346341]
+    #renderView.CameraFocalPoint = [1911.2685622012252, 893.5010100912012, 0.0]
+    renderView.CameraPosition = [mesh_factor * 1911.2685622012252, 893.5010100912012, 7630.409257346341]
+    renderView.CameraFocalPoint = [mesh_factor * 1911.2685622012252 * 2, 893.5010100912012, 0.0]
+    #renderView.CameraParallelScale = 923.1409390528261
+    renderView.CameraParallelScale = 975
+    
     # get layout
     layout = GetLayout()
-    layout.SetSize(1536, 730)
+    #layout.SetSize(1536, 730)
+    layout.SetSize(mesh_factor * 1536, 730)
 
     # get animation scene
     animationScene = GetAnimationScene()
@@ -76,6 +89,16 @@ def main(file, out, time):
     pp0LUTColorBar.TitleColor = [0.0, 0.0, 0.0]
     pp0LUTColorBar.LabelColor = [0.0, 0.0, 0.0]
 
+    # create a new 'Annotate Time'
+    annotateTime = AnnotateTime(registrationName='AnnotateTime')
+    annotateTime.Format = 'Time: {time:g}'
+    SetActiveSource(annotateTime)
+    annotateTimeDisplay = Show(annotateTime, renderView, 'TextSourceRepresentation')
+    annotateTimeDisplay.WindowLocation = 'Upper Right Corner'
+    #annotateTimeDisplay.Position = [0.96, 0.98]
+    annotateTimeDisplay.Color = [0.0, 0.0, 0.0]
+
+
     # export view
     ExportView(out, view=renderView, Compressoutputfile=0)
 
@@ -104,7 +127,14 @@ if __name__ == '__main__':
                         default=-1,
                         help='Time index to visualize.')
 
+    parser.add_argument('-m', '--mesh', dest='mesh',
+                        type=str,
+                        required=False,
+                        default='4416x2208p8',
+                        help=('Name of mesh to determine ParaView camera '
+                              'position and layout size.'))
+
     args = parser.parse_args()
 
-    main(args.file, args.out, args.time)
+    main(args.file, args.out, args.time, args.mesh)
 # END if
