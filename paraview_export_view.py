@@ -14,7 +14,7 @@ def main(file, out, time, mesh):
     if mesh == '4416x2208p8':
         mesh_factor = 1
     elif mesh == '8832x2208p8':
-        mesh_facor = 2
+        mesh_factor = 2
     else:
         print('Mesh not recognized, defaulting to layout for 4416x2208p8.')
         mesh_factor = 1
@@ -32,10 +32,8 @@ def main(file, out, time, mesh):
 
     # current camera placement for renderView
     renderView.InteractionMode = '2D'
-    #renderView.CameraPosition = [1911.2685622012252, 893.5010100912012, 7630.409257346341]
-    #renderView.CameraFocalPoint = [1911.2685622012252, 893.5010100912012, 0.0]
     renderView.CameraPosition = [mesh_factor * 1911.2685622012252, 893.5010100912012, 7630.409257346341]
-    renderView.CameraFocalPoint = [mesh_factor * 1911.2685622012252 * 2, 893.5010100912012, 0.0]
+    renderView.CameraFocalPoint = [mesh_factor * 1911.2685622012252, 893.5010100912012, 0.0]
     #renderView.CameraParallelScale = 923.1409390528261
     renderView.CameraParallelScale = 975
     
